@@ -4,6 +4,11 @@ from tkinter.ttk import Button, Entry, Label
 
 from constants import OPTION_COUNT_BY_DIFFICULTY, PHRASES, PREFERRED_FONTS, ROUNDS_PER_GAME
 
+try:
+    import winsound
+except ImportError:
+    winsound = None
+
 
 class GameScreen(Frame):
     def __init__(self, master, mode, difficulty, on_back_to_menu):
@@ -152,13 +157,29 @@ class GameScreen(Frame):
         if is_correct:
             self.score += 1
             self.feedback.config(text="Acertou!")
+            self.play_correct_sound()
         else:
             self.feedback.config(text=f"Errou. A fonte correta era {self.current_font}.")
+            self.play_wrong_sound()
 
         self.header.config(
             text=f"Rodada {self.round_number}/{ROUNDS_PER_GAME} | Pontuação: {self.score}"
         )
         self.next_button.pack(side="left", padx=5)
+
+    def play_correct_sound(self):
+        if winsound is not None:
+            winsound.Beep(880, 120)
+            winsound.Beep(1175, 140)
+        else:
+            self.bell()
+
+    def play_wrong_sound(self):
+        if winsound is not None:
+            winsound.Beep(220, 180)
+            winsound.Beep(165, 220)
+        else:
+            self.bell()
 
     def show_result(self):
         self.clear_answers()
